@@ -9,6 +9,43 @@ use App\Models\Setting;
 
 class AbcentController extends Controller
 {
+
+    public function index(Request $request)
+    {   
+        $data = Abcent::with(['employee'])->whereDate('arrival', now()->format('Y-m-d'))->get();
+        $pie = [];
+        $barLabel = [];
+        $barValue = [];
+        $late = 0 ;
+        $ontime = 0 ;
+        foreach ($data as $key => $value) {
+            if ($value->late) {
+                $late ++;
+            }else{
+                $ontime ++;
+            }            
+
+            $time = $value->arrival->format('H:00');
+
+            if (!in_array($time, $barLabel)) {
+                array_push($barLabel, $time);
+                array_push($barValue, 1);
+            }else{
+                $key = array_search($time, $barLabel);
+                $barValue[$key] ++;
+            }
+        }
+        array_push($pie,$ontime);
+        array_push($pie,$late);
+        
+        return response()->json([
+            'table' => $data,
+            'pie' => $pie,
+            'bar_label' => $barLabel,
+            'bar_value' => $barValue,
+        ]);
+    }
+
     public function abcent(Request $request)
     {
         $setting = Setting::first();

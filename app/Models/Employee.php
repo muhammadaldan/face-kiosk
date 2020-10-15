@@ -15,4 +15,9 @@ class Employee extends Model
     {
         return $this->belongsTo('App\Models\Department');
     }
+
+    public function abcent()
+    {
+        return $this->hasMany('App\Models\Abcent');
+    }
 }

@@ -3,6 +3,7 @@ import App from "./layouts/App.vue";
 import router from "./router/index.js";
 import store from "./store";
 import LoadScript from "vue-plugin-load-script";
+import VueApexCharts from "vue-apexcharts";
 
 // Vuetify Style
 import vuetify from "./vuetify";
@@ -22,6 +23,7 @@ window.axios.defaults.headers.common = {
 };
 
 Vue.use(LoadScript);
+Vue.component("apexchart", VueApexCharts);
 
 new Vue({
     store,

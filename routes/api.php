@@ -19,5 +19,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/getFaces', [App\Http\Controllers\RecognitionController::class, 'getFaces']);
+Route::get('/abcent', [App\Http\Controllers\AbcentController::class, 'index']);
 Route::post('/abcent', [App\Http\Controllers\AbcentController::class, 'abcent']);
 
