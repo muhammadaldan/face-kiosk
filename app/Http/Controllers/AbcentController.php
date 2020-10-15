@@ -59,7 +59,7 @@ class AbcentController extends Controller
             if(!$data){
                 $data = Abcent::create([
                     'employee_id' => $request->id,
-                    'late' => $setting->arrival_time >= now()->format('H:i'),
+                    'late' => $setting->arrival_time <= now()->format('H:i'),
                     'arrival' => now(),
                     'waktu_pulang' => Null
                 ]);       
@@ -69,7 +69,7 @@ class AbcentController extends Controller
             if(!$data){                
                $data = Abcent::create([
                     'employee_id' => $request->id,
-                    'late' => $setting->arrival_time >= now()->format('H:i'),
+                    'late' => $setting->arrival_time <= now()->format('H:i'),
                     'arrival' => now(),
                     'waktu_pulang' => Null
                 ]);                       

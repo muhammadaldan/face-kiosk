@@ -61,7 +61,7 @@ export default {
                 { text: "Name", value: "name" },
                 { text: "Department", value: "department" },
                 { text: "Email", value: "email" },
-                { text: "phone_number", value: "phone_number" },
+                { text: "Phone number", value: "phone_number" },
                 { text: "Gender", value: "gender" },
                 { text: "Photo", value: "photo" },
                 { text: "Action", sortable: false, value: "id" }

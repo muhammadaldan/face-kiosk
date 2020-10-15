@@ -23,6 +23,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('/employees', App\Http\Controllers\EmployeeController::class);
     Route::resource('/departments', App\Http\Controllers\DepartmentController::class);
     Route::resource('/settings', App\Http\Controllers\SettingController::class);
+    Route::post('/setting-user', [App\Http\Controllers\SettingUserController::class, 'account']);
+    Route::post('/setting-password', [App\Http\Controllers\SettingUserController::class, 'password']);
     Route::get('/{any}', [App\Http\Controllers\AppController::class, 'index'])->where('any', '.*');
 });
 

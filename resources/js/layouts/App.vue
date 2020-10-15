@@ -57,7 +57,7 @@
       </v-menu> -->
             <v-avatar size="40px" class="mt-2">
                 <v-avatar color="primary">
-                    <span class="white--text">{{
+                    <span class="white--text uppercase">{{
                         user.name[0] + user.name[1]
                     }}</span>
                 </v-avatar>
