@@ -12,7 +12,11 @@ class AbcentController extends Controller
 
     public function index(Request $request)
     {   
-        $data = Abcent::with(['employee'])->whereDate('arrival', now()->format('Y-m-d'))->get();
+        if ($request->date) {
+            $data = Abcent::with(['employee'])->whereDate('arrival', $request->date)->get();            
+        }else{
+            $data = Abcent::with(['employee'])->whereDate('arrival', now()->format('Y-m-d'))->get();
+        }
         $pie = [];
         $barLabel = [];
         $barValue = [];

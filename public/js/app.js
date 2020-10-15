@@ -3720,6 +3720,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3727,19 +3731,19 @@ __webpack_require__.r(__webpack_exports__);
         colors: ["#0e9f6e", "#f05252"],
         labels: ["On time", "Late"]
       },
-      series: [2, 1],
+      series: [],
       optionsBar: {
         legend: {
           show: true,
           showForSingleSeries: true
         },
         xaxis: {
-          categories: ["07:00", "08:00"]
+          categories: ["00:00"]
         }
       },
       seriesBar: [{
         name: "Arrival time",
-        data: [1, 2]
+        data: [0]
       }],
       loading: true,
       search: "",
@@ -3761,20 +3765,29 @@ __webpack_require__.r(__webpack_exports__);
       data: []
     };
   },
-  mounted: function mounted() {
-    var _this = this;
+  methods: {
+    getData: function getData() {
+      var _this = this;
 
-    axios.get("/api/abcent").then(function (response) {
-      _this.data = response.data.table;
-      _this.series = response.data.pie;
-      _this.optionsBar.xaxis.categories = response.data.bar_label;
-      _this.seriesBar.data = response.data.bar_value;
-      _this.loading = false;
-    })["catch"](function (error) {
-      _this.loading = false;
-      alert("error");
-      console.error(error);
-    });
+      this.loading = true;
+      axios.get("/api/abcent?date=" + this.picker).then(function (response) {
+        _this.data = response.data.table;
+        _this.series = response.data.pie;
+        _this.optionsBar.xaxis.categories = response.data.bar_label;
+        _this.seriesBar[0].data = response.data.bar_value;
+
+        _this.$refs.seriesBar.updateOptions(_this.optionsBar);
+
+        _this.loading = false;
+      })["catch"](function (error) {
+        _this.loading = false;
+        alert("error");
+        console.error(error);
+      });
+    }
+  },
+  mounted: function mounted() {
+    this.getData();
   }
 });
 
@@ -8532,6 +8545,7 @@ var render = function() {
                   }),
                   _vm._v(" "),
                   _c("apexchart", {
+                    ref: "seriesBar",
                     staticClass: "ml-10",
                     attrs: {
                       width: "380",
@@ -8546,6 +8560,11 @@ var render = function() {
               ),
               _vm._v(" "),
               _c("v-date-picker", {
+                on: {
+                  change: function($event) {
+                    return _vm.getData()
+                  }
+                },
                 model: {
                   value: _vm.picker,
                   callback: function($$v) {

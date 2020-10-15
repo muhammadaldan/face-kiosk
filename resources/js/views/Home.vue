@@ -19,11 +19,15 @@
                         width="380"
                         height="200px"
                         type="bar"
+                        ref="seriesBar"
                         :options="optionsBar"
                         :series="seriesBar"
                     ></apexchart>
                 </div>
-                <v-date-picker v-model="picker"></v-date-picker>
+                <v-date-picker
+                    v-model="picker"
+                    @change="getData()"
+                ></v-date-picker>
             </div>
             <v-data-table
                 :headers="headers"
@@ -52,20 +56,20 @@ export default {
                 colors: ["#0e9f6e", "#f05252"],
                 labels: ["On time", "Late"]
             },
-            series: [2, 1],
+            series: [],
             optionsBar: {
                 legend: {
                     show: true,
                     showForSingleSeries: true
                 },
                 xaxis: {
-                    categories: ["07:00", "08:00"]
+                    categories: ["00:00"]
                 }
             },
             seriesBar: [
                 {
                     name: "Arrival time",
-                    data: [1, 2]
+                    data: [0]
                 }
             ],
             loading: true,
@@ -84,21 +88,28 @@ export default {
             data: []
         };
     },
+    methods: {
+        getData() {
+            this.loading = true;
+            axios
+                .get("/api/abcent?date=" + this.picker)
+                .then(response => {
+                    this.data = response.data.table;
+                    this.series = response.data.pie;
+                    this.optionsBar.xaxis.categories = response.data.bar_label;
+                    this.seriesBar[0].data = response.data.bar_value;
+                    this.$refs.seriesBar.updateOptions(this.optionsBar);
+                    this.loading = false;
+                })
+                .catch(error => {
+                    this.loading = false;
+                    alert("error");
+                    console.error(error);
+                });
+        }
+    },
     mounted() {
-        axios
-            .get("/api/abcent")
-            .then(response => {
-                this.data = response.data.table;
-                this.series = response.data.pie;
-                this.optionsBar.xaxis.categories = response.data.bar_label;
-                this.seriesBar.data = response.data.bar_value;
-                this.loading = false;
-            })
-            .catch(error => {
-                this.loading = false;
-                alert("error");
-                console.error(error);
-            });
+        this.getData();
     }
 };
 </script>
