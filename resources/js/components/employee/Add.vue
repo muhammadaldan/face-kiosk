@@ -153,6 +153,19 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="processingImage" hide-overlay persistent width="300">
+            <v-card color="primary" dark>
+                <v-card-text>
+                    Processing image
+                    <v-progress-linear
+                        indeterminate
+                        color="white"
+                        class="mb-0"
+                    ></v-progress-linear>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </v-row>
 </template>
 
@@ -162,6 +175,7 @@ export default {
         return {
             dialog: false,
             alert: false,
+            processingImage: false,
             alertColor: "warning",
             notifications: false,
             messages: "",
@@ -247,7 +261,17 @@ export default {
             canvas = document.getElementById("picture");
             ctx = canvas.getContext("2d");
         },
+        async check_image(img) {
+            const check_image = await faceapi.fetchImage(img);
+            const detections = await faceapi
+                .detectSingleFace(check_image)
+                .withFaceLandmarks()
+                .withFaceDescriptor();
+
+            return detections;
+        },
         timeCountDown() {
+            const vm = this;
             if (this.timer > 0) {
                 setTimeout(() => {
                     this.timer -= 1;
@@ -255,6 +279,7 @@ export default {
                 }, 1000);
             } else {
                 this.timer = null;
+                this.processingImage = true;
                 const video = document.getElementById("take-picture");
                 // const canvas = document.getElementById("picture");
                 const canvas = document.createElement("canvas");
@@ -265,12 +290,24 @@ export default {
                 canvas.height = video.videoHeight;
                 canvas.getContext("2d").drawImage(video, 0, 0);
                 // Other browsers will fall back to image/png
-                img.src = canvas.toDataURL("image/webp");
+                const imgData = canvas.toDataURL("image/png");
+                img.src = imgData;
                 // // Draws current image from the video element into the canvas
                 // ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 // ctx.style.transform = "scale3d(0.5,0.5,0)";
                 // const image = canvas.toDataURL({ pixelRatio: 2 });
-                this.image = canvas.toDataURL("image/png");
+
+                this.check_image(imgData).then(response => {
+                    if (response) {
+                        this.image = imgData;
+                    } else {
+                        vm.alert = true;
+                        vm.alertColor = "warning";
+                        vm.messages =
+                            "Gagal memverifikasi wajah, mohon tunjunkan dahi, dan muka";
+                    }
+                    vm.processingImage = false;
+                });
             }
         },
         snapshot() {

@@ -2496,6 +2496,27 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
+/* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
+
+
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2659,6 +2680,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       dialog: false,
       alert: false,
+      processingImage: false,
       alertColor: "warning",
       notifications: false,
       messages: "",
@@ -2749,8 +2771,37 @@ __webpack_require__.r(__webpack_exports__);
       canvas = document.getElementById("picture");
       ctx = canvas.getContext("2d");
     },
+    check_image: function check_image(img) {
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee() {
+        var check_image, detections;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return faceapi.fetchImage(img);
+
+              case 2:
+                check_image = _context.sent;
+                _context.next = 5;
+                return faceapi.detectSingleFace(check_image).withFaceLandmarks().withFaceDescriptor();
+
+              case 5:
+                detections = _context.sent;
+                return _context.abrupt("return", detections);
+
+              case 7:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
+    },
     timeCountDown: function timeCountDown() {
       var _this = this;
+
+      var vm = this;
 
       if (this.timer > 0) {
         setTimeout(function () {
@@ -2760,6 +2811,7 @@ __webpack_require__.r(__webpack_exports__);
         }, 1000);
       } else {
         this.timer = null;
+        this.processingImage = true;
         var video = document.getElementById("take-picture"); // const canvas = document.getElementById("picture");
 
         var canvas = document.createElement("canvas");
@@ -2769,12 +2821,23 @@ __webpack_require__.r(__webpack_exports__);
         canvas.height = video.videoHeight;
         canvas.getContext("2d").drawImage(video, 0, 0); // Other browsers will fall back to image/png
 
-        img.src = canvas.toDataURL("image/webp"); // // Draws current image from the video element into the canvas
+        var imgData = canvas.toDataURL("image/png");
+        img.src = imgData; // // Draws current image from the video element into the canvas
         // ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         // ctx.style.transform = "scale3d(0.5,0.5,0)";
         // const image = canvas.toDataURL({ pixelRatio: 2 });
 
-        this.image = canvas.toDataURL("image/png");
+        this.check_image(imgData).then(function (response) {
+          if (response) {
+            _this.image = imgData;
+          } else {
+            vm.alert = true;
+            vm.alertColor = "warning";
+            vm.messages = "Gagal memverifikasi wajah, mohon tunjunkan dahi, dan muka";
+          }
+
+          vm.processingImage = false;
+        });
       }
     },
     snapshot: function snapshot() {
@@ -3001,10 +3064,25 @@ __webpack_require__.r(__webpack_exports__);
       data: []
     };
   },
-  mounted: function mounted() {
-    var vm = this;
-    this.$store.dispatch("Employee/getData").then(function (result) {
-      vm.loading = false;
+  methods: {
+    loadModels: function loadModels() {
+      var _this = this;
+
+      var vm = this;
+      Promise.all([faceapi.nets.tinyFaceDetector.loadFromUri("/face-recognition/models"), faceapi.nets.faceLandmark68Net.loadFromUri("/face-recognition/models"), faceapi.nets.faceRecognitionNet.loadFromUri("/face-recognition/models"), faceapi.nets.faceExpressionNet.loadFromUri("/face-recognition/models"), // faceapi.nets.ageGenderNet.loadFromUri("/face-recognition/models"),
+      faceapi.nets.ssdMobilenetv1.loadFromUri("/face-recognition/models")]).then(function (e) {
+        _this.$store.dispatch("Employee/getData").then(function (result) {
+          vm.loading = false;
+        });
+      });
+    }
+  },
+  created: function created() {
+    var _this2 = this;
+
+    this.$loadScript("/face-recognition/face-api.min.js").then(function () {
+      _this2.loadModels();
+    })["catch"](function () {// Failed to fetch script
     });
   }
 });
@@ -6927,6 +7005,43 @@ var render = function() {
           )
         ],
         1
+      ),
+      _vm._v(" "),
+      _c(
+        "v-dialog",
+        {
+          attrs: { "hide-overlay": "", persistent: "", width: "300" },
+          model: {
+            value: _vm.processingImage,
+            callback: function($$v) {
+              _vm.processingImage = $$v
+            },
+            expression: "processingImage"
+          }
+        },
+        [
+          _c(
+            "v-card",
+            { attrs: { color: "primary", dark: "" } },
+            [
+              _c(
+                "v-card-text",
+                [
+                  _vm._v(
+                    "\n                Processing image\n                "
+                  ),
+                  _c("v-progress-linear", {
+                    staticClass: "mb-0",
+                    attrs: { indeterminate: "", color: "white" }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
       )
     ],
     1
@@ -8448,6 +8563,66 @@ function normalizeComponent (
     options: options
   }
 }
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-plugin-load-script/index.js":
+/*!******************************************************!*\
+  !*** ./node_modules/vue-plugin-load-script/index.js ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+const LoadScript = {
+  install: function (Vue) {
+    Vue.loadScript = Vue.prototype.$loadScript = function (src) { // eslint-disable-line no-param-reassign
+      return new Promise(function (resolve, reject) {
+        let shouldAppend = false;
+        let el = document.querySelector('script[src="' + src + '"]');
+        if (!el) {
+          el = document.createElement('script');
+          el.type = 'text/javascript';
+          el.async = true;
+          el.src = src;
+          shouldAppend = true;
+        }
+        else if (el.hasAttribute('data-loaded')) {
+          resolve(el);
+          return;
+        }
+
+        el.addEventListener('error', reject);
+        el.addEventListener('abort', reject);
+        el.addEventListener('load', function loadScriptHandler() {
+          el.setAttribute('data-loaded', true);
+          resolve(el);
+        });
+
+        if (shouldAppend) document.head.appendChild(el);
+      });
+    };
+
+    Vue.unloadScript = Vue.prototype.$unloadScript = function (src) { // eslint-disable-line no-param-reassign
+      return new Promise(function (resolve, reject) {
+        const el = document.querySelector('script[src="' + src + '"]');
+
+        if (!el) {
+          reject();
+          return;
+        }
+
+        document.head.removeChild(el);
+
+        resolve();
+      });
+    };
+  },
+};
+
+/* harmony default export */ __webpack_exports__["default"] = (LoadScript);
 
 
 /***/ }),
@@ -68594,7 +68769,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _layouts_App_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./layouts/App.vue */ "./resources/js/layouts/App.vue");
 /* harmony import */ var _router_index_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./router/index.js */ "./resources/js/router/index.js");
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./store */ "./resources/js/store/index.js");
-/* harmony import */ var _vuetify__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./vuetify */ "./resources/js/vuetify.js");
+/* harmony import */ var vue_plugin_load_script__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue-plugin-load-script */ "./node_modules/vue-plugin-load-script/index.js");
+/* harmony import */ var _vuetify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./vuetify */ "./resources/js/vuetify.js");
+
 
 
 
@@ -68609,10 +68786,11 @@ window.axios.defaults.headers.common = {
   "X-Requested-With": "XMLHttpRequest",
   "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content")
 };
+vue__WEBPACK_IMPORTED_MODULE_0___default.a.use(vue_plugin_load_script__WEBPACK_IMPORTED_MODULE_4__["default"]);
 new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
   store: _store__WEBPACK_IMPORTED_MODULE_3__["default"],
   router: _router_index_js__WEBPACK_IMPORTED_MODULE_2__["default"],
-  vuetify: _vuetify__WEBPACK_IMPORTED_MODULE_4__["default"],
+  vuetify: _vuetify__WEBPACK_IMPORTED_MODULE_5__["default"],
   render: function render(h) {
     return h(_layouts_App_vue__WEBPACK_IMPORTED_MODULE_1__["default"]);
   }

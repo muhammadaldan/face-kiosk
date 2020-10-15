@@ -69,11 +69,41 @@ export default {
             data: []
         };
     },
-    mounted() {
-        const vm = this;
-        this.$store.dispatch("Employee/getData").then(result => {
-            vm.loading = false;
-        });
+    methods: {
+        loadModels() {
+            const vm = this;
+            Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri(
+                    "/face-recognition/models"
+                ),
+                faceapi.nets.faceLandmark68Net.loadFromUri(
+                    "/face-recognition/models"
+                ),
+                faceapi.nets.faceRecognitionNet.loadFromUri(
+                    "/face-recognition/models"
+                ),
+                faceapi.nets.faceExpressionNet.loadFromUri(
+                    "/face-recognition/models"
+                ),
+                // faceapi.nets.ageGenderNet.loadFromUri("/face-recognition/models"),
+                faceapi.nets.ssdMobilenetv1.loadFromUri(
+                    "/face-recognition/models"
+                )
+            ]).then(e => {
+                this.$store.dispatch("Employee/getData").then(result => {
+                    vm.loading = false;
+                });
+            });
+        }
+    },
+    created() {
+        this.$loadScript("/face-recognition/face-api.min.js")
+            .then(() => {
+                this.loadModels();
+            })
+            .catch(() => {
+                // Failed to fetch script
+            });
     }
 };
 </script>

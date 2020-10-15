@@ -32,7 +32,7 @@ const loadLabels = async () => {
     return Promise.all(
         data.data.map(async element => {
             const descriptions = [];
-            const img = await faceapi.fetchImage(`${element.image}`);
+            const img = await faceapi.fetchImage(`${element.photo}`);
             const detections = await faceapi
                 .detectSingleFace(img)
                 .withFaceLandmarks()
@@ -145,8 +145,8 @@ video.addEventListener("play", async () => {
                     const time = new Date();
 
                     document.getElementById("name").innerHTML = predict.name;
-                    document.getElementById("nik").innerHTML = predict.nik;
-                    document.getElementById("face").src = predict.image;
+                    document.getElementById("nik").innerHTML = predict.nim;
+                    document.getElementById("face").src = predict.photo;
                     document.getElementById("gender").innerHTML =
                         predict.gender;
                     document.getElementById("alert").style.opacity = 1;
