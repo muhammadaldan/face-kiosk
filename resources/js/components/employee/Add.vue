@@ -305,6 +305,7 @@ export default {
                         vm.alertColor = "warning";
                         vm.messages =
                             "Gagal memverifikasi wajah, mohon tunjunkan dahi, dan muka";
+                        this.image = "";
                     }
                     vm.processingImage = false;
                 });

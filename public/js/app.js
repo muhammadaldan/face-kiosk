@@ -2860,6 +2860,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             vm.alert = true;
             vm.alertColor = "warning";
             vm.messages = "Gagal memverifikasi wajah, mohon tunjunkan dahi, dan muka";
+            _this.image = "";
           }
 
           vm.processingImage = false;
