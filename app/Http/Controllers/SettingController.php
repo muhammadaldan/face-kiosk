@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use App\Models\Setting;
+use App\Models\SettingApp;
 
 class SettingController extends Controller
 {
@@ -16,10 +17,12 @@ class SettingController extends Controller
     public function index()
     {        
         $data = Setting::first();
+        $app = SettingApp::first();        
 
         return response()->json([
             'status' => true,            
             'data' => $data,            
+            'app' => $app,
         ]);
     }
 

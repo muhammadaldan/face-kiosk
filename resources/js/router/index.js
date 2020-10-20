@@ -12,10 +12,12 @@ const router = new VueRouter({
 
 // router.replace({ path: "/", redirect: "/" });
 
-// router.beforeEach((to, from, next) => {
-//     store.commit("Loading/SET_SPINNER", true);
-//     next();
-// });
+router.beforeEach((to, from, next) => {
+    if (to.name === "user" && user.id !== 1) {
+        router.replace({ path: "/", redirect: "/" });
+    }
+    next();
+});
 
 // router.afterEach((to, from) => {
 //     store.commit("Loading/SET_SPINNER", false);

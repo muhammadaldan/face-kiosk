@@ -25,6 +25,7 @@
 
     <script>
     window.user = {!! json_encode(Auth::user()) !!};
+    window.setting = {!! json_encode($setting) !!};
     </script>
 </body>
 </html>

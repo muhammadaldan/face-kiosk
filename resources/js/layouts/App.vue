@@ -11,7 +11,11 @@
                 <v-list-item-group color="">
                     <v-list-item class="mb-5 text-center">
                         <img
-                            src="/assets/images/logo.png"
+                            :src="
+                                setting.logo
+                                    ? setting.logo
+                                    : '/assets/images/logo.png'
+                            "
                             width="150px"
                             alt=""
                             srcset=""
@@ -33,12 +37,32 @@
                             <v-list-item-title class="" v-text="item.title" />
                         </v-list-item-content>
                     </v-list-item>
+                    <template v-if="user.id === 1">
+                        <v-list-item
+                            v-for="(item, i) in itemsHide"
+                            :key="i + 'a'"
+                            :to="item.to"
+                            active-class="primary--text"
+                            router
+                            exact
+                        >
+                            <v-list-item-action>
+                                <v-icon class="">{{ item.icon }}</v-icon>
+                            </v-list-item-action>
+                            <v-list-item-content>
+                                <v-list-item-title
+                                    class=""
+                                    v-text="item.title"
+                                />
+                            </v-list-item-content>
+                        </v-list-item>
+                    </template>
                 </v-list-item-group>
             </v-list>
         </v-navigation-drawer>
         <v-app-bar fixed app :class="`white shadow-sm`">
             <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-            <p class="mb-0 font-weight-bold">Attendance System</p>
+            <p class="mb-0 font-weight-bold">{{ setting.name }}</p>
             <v-spacer></v-spacer>
             <!-- <v-menu top :offset-x="true">
         <template v-slot:activator="{ on, attrs }">
@@ -112,6 +136,7 @@ export default {
         return {
             drawer: true,
             user: user,
+            setting: setting,
             csrf: document
                 .querySelector('meta[name="csrf-token"]')
                 .getAttribute("content"),
@@ -119,22 +144,40 @@ export default {
                 {
                     icon: "mdi-view-dashboard-outline",
                     title: "Dashboard",
+                    hide: false,
                     to: "/"
                 },
                 {
                     icon: "mdi-office-building",
                     title: "Department",
+                    hide: false,
                     to: "/department"
                 },
                 {
                     icon: "mdi-account-tie",
                     title: "Employee",
+                    hide: false,
                     to: "/employee"
+                },
+                {
+                    icon: "mdi-file",
+                    title: "Report",
+                    hide: false,
+                    to: "/report"
                 },
                 {
                     icon: "mdi-cogs",
                     title: "Setting",
+                    hide: false,
                     to: "/setting"
+                }
+            ],
+            itemsHide: [
+                {
+                    icon: "mdi-account-multiple-plus",
+                    title: "User",
+                    hide: true,
+                    to: "/user"
                 }
             ],
 

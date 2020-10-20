@@ -74,6 +74,7 @@ export default {
             ],
             loading: true,
             search: "",
+            date: new Date(), // Or the date you'd like converted.
             picker: new Date().toISOString().substr(0, 10),
             headers: [
                 {
@@ -110,6 +111,12 @@ export default {
     },
     mounted() {
         this.getData();
+        let date = new Date(); // Or the date you'd like converted.
+        this.picker = new Date(
+            date.getTime() - date.getTimezoneOffset() * 60000
+        )
+            .toISOString()
+            .substr(0, 10);
     }
 };
 </script>

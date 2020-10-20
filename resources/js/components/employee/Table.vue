@@ -10,7 +10,7 @@
                 hide-details
             ></v-text-field>
             <div class="sm:w-2/3 w-1/3">
-                <v-add></v-add>
+                <v-add :disabledWait="loading"></v-add>
             </div>
         </v-card-title>
         <v-data-table

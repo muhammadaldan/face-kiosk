@@ -1,11 +1,24 @@
 <template>
     <div>
-        <v-card>
-            <v-row class="p-6">
-                <v-col cols="12">
-                    <v-form ref="form" v-model="valid" lazy-validation>
-                        <v-row>
-                            <v-col cols="6" class="p-0">
+        <v-card class="shadow-sm">
+            <v-tabs vertical>
+                <v-tab>
+                    <v-icon left>
+                        mdi-clock
+                    </v-icon>
+                    Time
+                </v-tab>
+                <v-tab>
+                    <v-icon left>
+                        mdi-apps
+                    </v-icon>
+                    App
+                </v-tab>
+
+                <v-tab-item>
+                    <v-card flat>
+                        <v-card-text>
+                            <v-form ref="form" v-model="valid" lazy-validation>
                                 <v-menu
                                     ref="menu"
                                     v-model="menu"
@@ -34,8 +47,6 @@
                                         @click:minute="$refs.menu.save(time)"
                                     ></v-time-picker>
                                 </v-menu>
-                            </v-col>
-                            <v-col cols="6" class="p-0">
                                 <v-menu
                                     ref="menu2"
                                     v-model="menu2"
@@ -64,8 +75,6 @@
                                         @click:minute="$refs.menu2.save(time2)"
                                     ></v-time-picker>
                                 </v-menu>
-                            </v-col>
-                            <v-col cols="10" class="p-0">
                                 <v-btn
                                     :disabled="!valid"
                                     color="success"
@@ -73,13 +82,49 @@
                                     :loading="loading"
                                     @click="validate"
                                 >
-                                    Submit
+                                    Update
                                 </v-btn>
-                            </v-col>
-                        </v-row>
-                    </v-form>
-                </v-col>
-            </v-row>
+                            </v-form>
+                        </v-card-text>
+                    </v-card>
+                </v-tab-item>
+                <v-tab-item>
+                    <v-card flat>
+                        <v-card-text>
+                            <v-form
+                                ref="formApp"
+                                v-model="valid1"
+                                lazy-validation
+                            >
+                                <v-text-field
+                                    label="Name"
+                                    outlined
+                                    v-model="name"
+                                    :rules="required"
+                                    dense
+                                ></v-text-field>
+                                <v-file-input
+                                    label="Logo (Optional)"
+                                    outlined
+                                    dense
+                                    required
+                                    ref="foto"
+                                    v-model="logo"
+                                ></v-file-input>
+                                <v-btn
+                                    :disabled="!valid1"
+                                    color="success"
+                                    class="mr-4"
+                                    :loading="loading"
+                                    @click="updateApp"
+                                >
+                                    Update
+                                </v-btn>
+                            </v-form>
+                        </v-card-text>
+                    </v-card>
+                </v-tab-item>
+            </v-tabs>
         </v-card>
 
         <v-dialog v-model="alert" max-width="350">
@@ -111,10 +156,13 @@ export default {
             notifications: false,
             messages: "",
             valid: true,
+            valid1: true,
             required: [v => !!v || "Cannot empty"],
             id: "",
             time: "",
             time2: "",
+            name: "",
+            logo: "",
             disabled: true,
             loading: false
         };
@@ -127,6 +175,7 @@ export default {
                 .then(response => {
                     vm.id = response.data.data.id;
                     vm.time = response.data.data.arrival_time;
+                    vm.name = response.data.app.name;
                     vm.time2 = response.data.data.waktu_pulang;
                 })
                 .catch(error => {
@@ -148,6 +197,41 @@ export default {
                             vm.alert = true;
                             vm.messages = "success";
                             vm.alertColor = "success";
+                        } else {
+                            vm.alert = true;
+                            vm.messages = response.data.message[0];
+                            vm.alertColor = "danger";
+                        }
+
+                        vm.loading = false;
+                    })
+                    .catch(error => {
+                        vm.loading = false;
+                        console.log(error);
+                        alert(error);
+                    });
+            }
+        },
+        updateApp() {
+            const vm = this;
+            if (this.$refs.formApp.validate()) {
+                vm.loading = true;
+                let formData = new FormData();
+                formData.append("name", vm.name);
+                formData.append("logo", vm.logo);
+                axios
+                    .post(`/setting-app`, formData, {
+                        headers: {
+                            "Content-Type": "multipart/form-data"
+                        }
+                    })
+                    .then(response => {
+                        if (response.data.status) {
+                            vm.alert = true;
+                            vm.messages = "success";
+                            vm.alertColor = "success";
+                            setting.name = response.data.data.name;
+                            setting.logo = response.data.data.logo;
                         } else {
                             vm.alert = true;
                             vm.messages = response.data.message[0];

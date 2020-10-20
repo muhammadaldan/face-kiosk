@@ -3,6 +3,8 @@ import Employee from "../views/Employee.vue";
 import Department from "../views/Department.vue";
 import Setting from "../views/Setting.vue";
 import SettingUser from "../views/SettingUser.vue";
+import Report from "../views/Report.vue";
+import User from "../views/User.vue";
 
 const routes = [
     {
@@ -29,6 +31,16 @@ const routes = [
         path: "/setting-user",
         name: "settingUser",
         component: SettingUser
+    },
+    {
+        path: "/report",
+        name: "report",
+        component: Report
+    },
+    {
+        path: "/user",
+        name: "user",
+        component: User
     }
 ];
 

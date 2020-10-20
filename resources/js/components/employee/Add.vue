@@ -12,6 +12,7 @@
                     class="mr-4"
                     dark
                     v-bind="attrs"
+                    :disabled="disabledWait"
                     v-on="on"
                 >
                     Add
@@ -195,6 +196,7 @@ export default {
             loading: false
         };
     },
+    props: ["disabledWait"],
     methods: {
         validate() {
             const vm = this;
