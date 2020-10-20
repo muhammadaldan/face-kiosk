@@ -18,7 +18,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/getFaces', [App\Http\Controllers\RecognitionController::class, 'getFaces']);
-Route::get('/abcent', [App\Http\Controllers\AbcentController::class, 'index']);
-Route::post('/abcent', [App\Http\Controllers\AbcentController::class, 'abcent']);
+
+Route::group(['middleware' => 'cors'], function() {
+    Route::get('/getFaces', [App\Http\Controllers\RecognitionController::class, 'getFaces']);
+    Route::get('/abcent', [App\Http\Controllers\AbcentController::class, 'index']);
+    Route::post('/abcent', [App\Http\Controllers\AbcentController::class, 'abcent']);
+});
 

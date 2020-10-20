@@ -117,7 +117,7 @@
                             >Take picture</v-btn
                         >
                         <div class="w-full relative">
-                            <video id="take-picture" autoplay muted></video>
+                            <video id="take-picture2" autoplay muted></video>
                             <h1
                                 class="transition-all absolute text-6xl text-white"
                                 style="top: 50%;left: 50%;transform: translate(-50%, -50%);"
@@ -155,6 +155,19 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
+        <v-dialog v-model="processingImage" hide-overlay persistent width="300">
+            <v-card color="primary" dark>
+                <v-card-text>
+                    Processing image
+                    <v-progress-linear
+                        indeterminate
+                        color="white"
+                        class="mb-0"
+                    ></v-progress-linear>
+                </v-card-text>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -169,6 +182,7 @@ export default {
             alert: false,
             alertColor: "warning",
             gender: this.data.gender,
+            processingImage: false,
             valid: true,
             required: [v => !!v || "Cannot empty"],
             timer: null,
@@ -180,6 +194,7 @@ export default {
             phone_number: this.data.phone_number,
             department_id: this.data.department_id,
             disabled: true,
+            messages: "",
             loading: false
         };
     },
@@ -222,7 +237,7 @@ export default {
             }
         },
         startVideo() {
-            const video = document.getElementById("take-picture");
+            const video = document.getElementById("take-picture2");
             const hdConstraints = {
                 audio: false,
                 video: {
@@ -233,6 +248,7 @@ export default {
             };
             navigator.mediaDevices.getUserMedia(hdConstraints).then(
                 stream => (video.srcObject = stream),
+
                 err => console.log(err)
             );
             this.disabled = false;
@@ -244,6 +260,15 @@ export default {
             canvas = document.getElementById("picture");
             ctx = canvas.getContext("2d");
         },
+        async check_image(img) {
+            const check_image = await faceapi.fetchImage(img);
+            const detections = await faceapi
+                .detectSingleFace(check_image)
+                .withFaceLandmarks()
+                .withFaceDescriptor();
+
+            return detections;
+        },
         timeCountDown() {
             if (this.timer > 0) {
                 setTimeout(() => {
@@ -252,7 +277,8 @@ export default {
                 }, 1000);
             } else {
                 this.timer = null;
-                const video = document.getElementById("take-picture");
+                this.processingImage = true;
+                const video = document.getElementById("take-picture2");
                 // const canvas = document.getElementById("picture");
                 const canvas = document.createElement("canvas");
 
@@ -262,12 +288,24 @@ export default {
                 canvas.height = video.videoHeight;
                 canvas.getContext("2d").drawImage(video, 0, 0);
                 // Other browsers will fall back to image/png
-                img.src = canvas.toDataURL("image/webp");
+                const imgData = canvas.toDataURL("image/png");
+                img.src = imgData;
                 // // Draws current image from the video element into the canvas
                 // ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
                 // ctx.style.transform = "scale3d(0.5,0.5,0)";
                 // const image = canvas.toDataURL({ pixelRatio: 2 });
-                this.image = canvas.toDataURL("image/png");
+                this.check_image(imgData).then(response => {
+                    if (response) {
+                        this.image = imgData;
+                    } else {
+                        this.alert = true;
+                        this.alertColor = "warning";
+                        this.messages =
+                            "Gagal memverifikasi wajah, mohon tunjunkan dahi, dan muka";
+                        this.image = "";
+                    }
+                    this.processingImage = false;
+                });
             }
         },
         snapshot() {

@@ -7,6 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
   <script defer src="/face-recognition/face-api.min.js"></script>
+  <script defer src="/js/mqtt.js"></script>
   <script defer src="/face-recognition/script.js"></script>
   <style>
     body {

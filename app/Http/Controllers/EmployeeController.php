@@ -66,8 +66,15 @@ class EmployeeController extends Controller
         $image = $request->image;  // your base64 encoded
         $image = str_replace('data:image/png;base64,', '', $image);
         $image = str_replace(' ', '+', $image);
-        $imageName = Str::random(4).'.'.'png';
+        $imageName = Str::random(4).'.jpeg';
         \File::put(public_path(). '/assets/images/upload/employee/' . $imageName, base64_decode($image));
+        
+        
+        $info = getimagesize(public_path().'/assets/images/upload/employee/' . $imageName);
+        
+        $image = imagecreatefrompng(public_path().'/assets/images/upload/employee/' . $imageName );
+        imagejpeg($image, public_path().'/assets/images/upload/employee/' . $imageName , 70);
+
 
        $data = Employee::create([
             'nim' => $request->nim,
@@ -142,7 +149,15 @@ class EmployeeController extends Controller
             $image = str_replace(' ', '+', $image);
             $imageName = Str::random(4).'.'.'png';
             \File::put(public_path(). '/assets/images/upload/employee/' . $imageName, base64_decode($image));
-            unlink($data->photo);
+            if (is_writable(public_path($data->photo))) {
+                unlink(public_path($data->photo));
+            }                                    
+            
+            $info = getimagesize(public_path().'/assets/images/upload/employee/' . $imageName);
+            
+            $image = imagecreatefrompng(public_path().'/assets/images/upload/employee/' . $imageName );
+            imagejpeg($image, public_path().'/assets/images/upload/employee/' . $imageName , 70);
+
             $data->update([
                 'photo' => '/assets/images/upload/employee/'.$imageName
             ]);

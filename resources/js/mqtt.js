@@ -1,0 +1,1 @@
+window.mqtt = require("mqtt");

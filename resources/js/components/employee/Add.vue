@@ -192,6 +192,7 @@ export default {
             name: "",
             phone_number: "",
             department_id: "",
+            messages: "",
             disabled: true,
             loading: false
         };

@@ -1,5 +1,18 @@
 const video = document.getElementById("video");
 
+const client = mqtt.connect("ws://127.0.0.1:1884");
+
+client.on("connect", function() {
+    client.subscribe("abcent");
+});
+
+let abcent = "false";
+
+client.on("message", function(topic, message) {
+    // message is Buffer
+    abcent = message.toString();
+});
+
 function startVideo() {
     navigator.mediaDevices
         .getUserMedia({
@@ -71,14 +84,15 @@ let timeout;
 function setCard() {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-        document.getElementById("name").innerHTML = "Unkown";
+        document.getElementById("name").innerHTML = "-";
         document.getElementById("nik").innerHTML = "-";
-        document.getElementById("face").src = "/images/assets/no-image.png";
+        document.getElementById("face").src = "/assets/images/no-image.png";
         document.getElementById("gender").innerHTML = "-";
         document.getElementById("alert").style.opacity = 1;
         document.getElementById("time").innerHTML = "-";
         document.getElementById("late").innerHTML = "-";
         document.getElementById("waktu_pulang").innerHTML = "-";
+        client.publish("abcent", "false");
     }, 10000);
 }
 
@@ -131,42 +145,52 @@ video.addEventListener("play", async () => {
         //     detection.detection.box.topRight
         //   ).draw(canvas);
         // });
-        results.forEach((result, index) => {
-            const box = resizedDetections[index].detection.box;
-            const { label, distance } = result;
-            labelCount.push(label);
-            // console.log(label);
-            // console.log(labelCount);
-            const detectCount = countOccurrences(labelCount, label);
-            const detectUnknownCount = countOccurrences(labelCount, "unknown");
-            if (labelCount.length > 10) {
-                if (detectCount > detectUnknownCount) {
-                    const predict = JSON.parse(label);
-                    const time = new Date();
+        if (abcent === "true") {
+            results.forEach((result, index) => {
+                const box = resizedDetections[index].detection.box;
+                const { label, distance } = result;
+                labelCount.push(label);
+                // console.log(label);
+                // console.log(labelCount);
+                const detectCount = countOccurrences(labelCount, label);
+                const detectUnknownCount = countOccurrences(
+                    labelCount,
+                    "unknown"
+                );
+                if (labelCount.length > 10) {
+                    if (detectCount > detectUnknownCount) {
+                        const predict = JSON.parse(label);
+                        const time = new Date();
 
-                    document.getElementById("name").innerHTML = predict.name;
-                    document.getElementById("nik").innerHTML = predict.nim;
-                    document.getElementById("face").src = predict.photo;
-                    document.getElementById("gender").innerHTML =
-                        predict.gender;
-                    document.getElementById("alert").style.opacity = 1;
-                    postData("/api/abcent", { id: predict.id }).then(data => {
-                        document.getElementById("time").innerHTML =
-                            data.data.arrival;
-                        document.getElementById("waktu_pulang").innerHTML =
-                            data.data.waktu_pulang;
-                        document.getElementById("late").innerHTML =
-                            data.data.late === 0;
-                        setCard();
-                    });
+                        document.getElementById("name").innerHTML =
+                            predict.name;
+                        document.getElementById("nik").innerHTML = predict.nim;
+                        document.getElementById("face").src = predict.photo;
+                        document.getElementById("gender").innerHTML =
+                            predict.gender;
+                        document.getElementById("alert").style.opacity = 1;
+                        postData("/api/abcent", { id: predict.id }).then(
+                            data => {
+                                document.getElementById("time").innerHTML =
+                                    data.data.arrival;
+                                document.getElementById(
+                                    "waktu_pulang"
+                                ).innerHTML = data.data.waktu_pulang;
+                                document.getElementById("late").innerHTML =
+                                    data.data.late === 1;
+                                setCard();
+                                client.publish("abcent", "stop");
+                            }
+                        );
+                    }
+                    labelCount = [];
                 }
-                labelCount = [];
-            }
-            // new faceapi.draw.DrawTextField(
-            //     [`${label} (${parseInt(distance * 100, 10)})`],
-            //     // [`${label}`],
-            //     box.bottomRight
-            // ).draw(canvas);
-        });
+                // new faceapi.draw.DrawTextField(
+                //     [`${label} (${parseInt(distance * 100, 10)})`],
+                //     // [`${label}`],
+                //     box.bottomRight
+                // ).draw(canvas);
+            });
+        }
     }, 100);
 });
