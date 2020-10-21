@@ -18,6 +18,10 @@ Auth::routes();
 Route::get('/recognition', function () {
     return view('recognition');
 });    
+
+Route::get('/mask', function () {
+    return view('mask');
+});    
     
 Route::middleware(['auth'])->group(function () {
     Route::resource('/employees', App\Http\Controllers\EmployeeController::class);
