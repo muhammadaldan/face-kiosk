@@ -92,6 +92,7 @@ function setCard() {
         document.getElementById("time").innerHTML = "-";
         document.getElementById("late").innerHTML = "-";
         document.getElementById("waktu_pulang").innerHTML = "-";
+        document.getElementById("alert").style.opacity = 0;
         client.publish("abcent", "false");
     }, 10000);
 }
@@ -131,8 +132,8 @@ video.addEventListener("play", async () => {
         const results = resizedDetections.map(d =>
             faceMatcher.findBestMatch(d.descriptor)
         );
-        // canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-        // faceapi.draw.drawDetections(canvas, resizedDetections);
+        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+        faceapi.draw.drawDetections(canvas, resizedDetections);
         // faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
         // faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
         // resizedDetections.forEach((detection) => {

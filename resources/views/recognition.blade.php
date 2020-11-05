@@ -38,30 +38,31 @@
     }
 
     canvas {
-      /* transform: rotateY(180deg); */
-      display: none;
+      transform: rotateY(180deg);
+      /* display: none; */
+      width: 150%;
       position: absolute;      
+      z-index: 1;
     }
 
     #alert{
+      background-color: white;
       position: absolute;
-      bottom: 0px;
-      left:50;      
-      min-width: 700px;
-      height: 150px;
-      padding-top: 35px;
-      opacity: 1;
-      border-radius: 0px;
-      border-radius: 0px;
+      z-index: 2;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 30%;
+      opacity: 0;
+      border-radius: 20px;
       bottom: 0;
-      overflow: hidden;
-      background-image: url("/assets/images/Group 91.png");
-      background-size: cover;      
-      color: white;
+      background-size: cover;
+      color: black;
     }
 
     #face{      
-      height: 120px;
+      height: 210px;
       width: 100%;
       margin-right: 20px;
     }
@@ -69,7 +70,7 @@
     #box{
       transition: all .2s;
       display: flex;
-      justify-content: space-evenly;
+      flex-direction: column-reverse;
       align-items: center;
       margin-top: 10px;
     }
@@ -104,7 +105,7 @@
           <p >Arrival time : <span id="time"></span></p>
           <p >Waktu pulang : <span id="waktu_pulang"></span></p>
         </div>
-        <div style="margin-right: 20px;width: 150px;">            
+        <div style="margin-right: 20px;width: 250px;margin-bottom: 20px;margin-top: -100px;">            
           <img src="/assets/images/no-image.png" id="face" style="border-radius: 10px">    
         </div>
     </div>
