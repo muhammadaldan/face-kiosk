@@ -103,7 +103,8 @@
           <p >Gender : <span id="gender"></span></p>
           <p >Is late : <span id="late"></span></p>
           <p >Arrival time : <span id="time"></span></p>
-          <p >Waktu pulang : <span id="waktu_pulang"></span></p>
+          <p >Time home  : <span id="waktu_pulang"></span></p>
+          <p >Detection time : <span id="detection_time"></span></p>
         </div>
         <div style="margin-right: 20px;width: 250px;margin-bottom: 20px;margin-top: -100px;">            
           <img src="/assets/images/no-image.png" id="face" style="border-radius: 10px">    

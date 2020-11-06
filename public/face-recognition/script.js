@@ -11,6 +11,8 @@ let abcent = "false";
 client.on("message", function(topic, message) {
     // message is Buffer
     abcent = message.toString();
+	clearInterval(detection_time)
+	detection_time = null;
 });
 
 function startVideo() {
@@ -81,6 +83,19 @@ async function postData(url = "", data = {}) {
 }
 
 let timeout;
+let detection_time = null;
+function detectionTime() {    
+	let startTime = Date.now();
+	if(!detection_time){		
+		detection_time = setInterval(function() {
+			let elapsedTime = Date.now() - startTime;
+			document.getElementById("detection_time").innerHTML = (
+				elapsedTime / 1000
+			).toFixed(3) + ' s';
+		}, 100);
+	}
+}
+
 function setCard() {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
@@ -93,6 +108,7 @@ function setCard() {
         document.getElementById("late").innerHTML = "-";
         document.getElementById("waktu_pulang").innerHTML = "-";
         document.getElementById("alert").style.opacity = 0;
+        document.getElementById("detection_time").innerHTML = "-";
         client.publish("abcent", "false");
     }, 10000);
 }
@@ -146,7 +162,9 @@ video.addEventListener("play", async () => {
         //     detection.detection.box.topRight
         //   ).draw(canvas);
         // });
-        if (abcent === "true") {
+
+        if (abcent === "true") {           
+            detectionTime();
             results.forEach((result, index) => {
                 const box = resizedDetections[index].detection.box;
                 const { label, distance } = result;
@@ -161,8 +179,8 @@ video.addEventListener("play", async () => {
                 if (labelCount.length > 10) {
                     if (detectCount > detectUnknownCount) {
                         const predict = JSON.parse(label);
-                        const time = new Date();
-
+                        const time = new Date();                        
+						console.log(detection_time)
                         document.getElementById("name").innerHTML =
                             predict.name;
                         document.getElementById("nik").innerHTML = predict.nim;
