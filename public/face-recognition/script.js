@@ -1,3 +1,13 @@
+if (typeof console != "undefined")
+    if (typeof console.log != "undefined") console.olog = console.log;
+    else console.olog = function() {};
+
+console.log = function(message) {
+    console.olog(message);
+    document.getElementById('debugDiv') += "<p>" + message + "</p>");
+};
+console.error = console.debug = console.info = console.log;
+
 const video = document.getElementById("video");
 
 const client = mqtt.connect("ws://127.0.0.1:1884");
@@ -11,8 +21,13 @@ let abcent = "false";
 client.on("message", function(topic, message) {
     // message is Buffer
     abcent = message.toString();
-	clearInterval(detection_time)
-	detection_time = null;
+    clearInterval(detection_time);
+    detection_time = null;
+});
+
+client.stream.on("error", function(error) {
+    console.error(error);
+    window.location.reload(true);
 });
 
 function startVideo() {
@@ -54,6 +69,16 @@ const loadLabels = async () => {
                 .withFaceDescriptor();
             descriptions.push(detections.descriptor);
 
+            if (element.photo2) {
+                const img2 = await faceapi.fetchImage(`${element.photo2}`);
+
+                const detections2 = await faceapi
+                    .detectSingleFace(img2)
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+                descriptions.push(detections2.descriptor);
+            }
+
             const predict = element;
             setting = data.setting;
             return new faceapi.LabeledFaceDescriptors(
@@ -84,16 +109,15 @@ async function postData(url = "", data = {}) {
 
 let timeout;
 let detection_time = null;
-function detectionTime() {    
-	let startTime = Date.now();
-	if(!detection_time){		
-		detection_time = setInterval(function() {
-			let elapsedTime = Date.now() - startTime;
-			document.getElementById("detection_time").innerHTML = (
-				elapsedTime / 1000
-			).toFixed(3) + ' s';
-		}, 100);
-	}
+function detectionTime() {
+    let startTime = Date.now();
+    if (!detection_time) {
+        detection_time = setInterval(function() {
+            let elapsedTime = Date.now() - startTime;
+            document.getElementById("detection_time").innerHTML =
+                (elapsedTime / 1000).toFixed(3) + " s";
+        }, 100);
+    }
 }
 
 function setCard() {
@@ -110,7 +134,7 @@ function setCard() {
         document.getElementById("alert").style.opacity = 0;
         document.getElementById("detection_time").innerHTML = "-";
         client.publish("abcent", "false");
-    }, 10000);
+    }, 5000);
 }
 
 const countOccurrences = (arr, val) =>
@@ -163,7 +187,7 @@ video.addEventListener("play", async () => {
         //   ).draw(canvas);
         // });
 
-        if (abcent === "true") {           
+        if (abcent === "true") {
             detectionTime();
             results.forEach((result, index) => {
                 const box = resizedDetections[index].detection.box;
@@ -179,8 +203,8 @@ video.addEventListener("play", async () => {
                 if (labelCount.length > 10) {
                     if (detectCount > detectUnknownCount) {
                         const predict = JSON.parse(label);
-                        const time = new Date();                        
-						console.log(detection_time)
+                        const time = new Date();
+                        console.log(detection_time);
                         document.getElementById("name").innerHTML =
                             predict.name;
                         document.getElementById("nik").innerHTML = predict.nim;

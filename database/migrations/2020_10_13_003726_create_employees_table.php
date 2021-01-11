@@ -23,6 +23,7 @@ class CreateEmployeesTable extends Migration
             $table->string('phone_number')->nullable();
             $table->enum('gender', ['Male', 'Female']);
             $table->string('photo');
+            $table->string('photo2')->nullable();
             $table->timestamps();
         });
     }
