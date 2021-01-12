@@ -4,10 +4,9 @@ if (typeof console != "undefined")
 
 console.log = function(message) {
     console.olog(message);
-    document.getElementById('debugDiv') += "<p>" + message + "</p>");
+    document.getElementById("debugDiv").innerHTML += "<p>" + message + "</p>";
 };
 console.error = console.debug = console.info = console.log;
-
 const video = document.getElementById("video");
 
 const client = mqtt.connect("ws://127.0.0.1:1884");

@@ -95,6 +95,7 @@
 
 <body>
   <div id="debugDiv">
+  </div>
   <video id="video" width="720" height="560" autoplay muted></video>
   <div id="alert">
     <div id="box">
