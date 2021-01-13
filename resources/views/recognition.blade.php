@@ -94,7 +94,7 @@
 </head>
 
 <body>
-  <div id="debugDiv">
+  <div id="debugDiv" style="display: none;background:white;width:300px;height:400px; position :absolute;top:10px;left:10px;z-index:10;">
   </div>
   <video id="video" width="720" height="560" autoplay muted></video>
   <div id="alert">
