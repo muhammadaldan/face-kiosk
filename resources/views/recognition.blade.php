@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+ 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,8 +22,6 @@
       background:#143142;
       overflow:hidden
     }
-
-
     video {
       width: 100%;
       height: 100vh;
@@ -31,12 +29,10 @@
       transform: scaleX(-1);      
       border-radius: 0px;      
     }
-
     p {
       margin-bottom: 0;
       margin-top: 0;
     }
-
     canvas {
       transform: rotateY(180deg);
       /* display: none; */
@@ -44,7 +40,6 @@
       position: absolute;      
       z-index: 1;
     }
-
     #alert{
       background-color: white;
       position: absolute;
@@ -60,13 +55,11 @@
       background-size: cover;
       color: black;
     }
-
     #face{      
       height: 210px;
       width: 100%;
       margin-right: 20px;
     }
-
     #box{
       transition: all .2s;
       display: flex;
@@ -74,8 +67,7 @@
       align-items: center;
       margin-top: 10px;
     }
-
-        
+       
     @media only screen and (max-width: 600px) {
       video {
         width: 100%;
@@ -84,7 +76,6 @@
         bottom: 0px;
         width: 100%;
       }
-
       #alert{
         bottom:0px;
         width: 120%;                
@@ -92,10 +83,9 @@
     }
   </style>
 </head>
-
+ 
 <body>
-  <div id="debugDiv" style="display: none;background:white;width:300px;height:400px; position :absolute;top:10px;left:10px;z-index:10;">
-  </div>
+<div id="debugDiv" style="display:none;position:absolute;top:20px;left:10px;width:300px;height:400px;background:white;z-index:10"></div>
   <video id="video" width="720" height="560" autoplay muted></video>
   <div id="alert">
     <div id="box">
@@ -114,5 +104,4 @@
     </div>
   </div>
 </body>
-
 </html>
