@@ -234,7 +234,7 @@ video.addEventListener("play", async () => {
                                 document.getElementById("late").innerHTML =
                                     data.data.late === 1;
                                 setCard();
-                                // client.publish("abcent", "stop2");
+                                client.publish("abcent", "stop2");
                             }
                         );
                     }
