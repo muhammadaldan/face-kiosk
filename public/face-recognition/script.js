@@ -85,7 +85,9 @@ const loadLabels = async () => {
                 descriptions
             );
         })
-    );
+    ).catch(e => {
+        window.location.reload(true);
+    });
 };
 
 async function postData(url = "", data = {}) {
@@ -146,7 +148,11 @@ Promise.all([
     faceapi.nets.faceExpressionNet.loadFromUri("/face-recognition/models"),
     // faceapi.nets.ageGenderNet.loadFromUri("/face-recognition/models"),
     faceapi.nets.ssdMobilenetv1.loadFromUri("/face-recognition/models")
-]).then(startVideo);
+])
+    .then(startVideo)
+    .catch(e => {
+        window.location.reload(true);
+    });
 
 let labelCount = [];
 
