@@ -205,6 +205,11 @@ video.addEventListener("play", async () => {
                     labelCount,
                     "unknown"
                 );
+                console.log(results.length);
+                if (results.length > 1) {
+                    document.getElementById("alert2").style.opacity = 2;
+                }
+
                 if (labelCount.length > 10) {
                     if (detectCount > detectUnknownCount) {
                         const predict = JSON.parse(label);
@@ -227,12 +232,13 @@ video.addEventListener("play", async () => {
                                 document.getElementById("late").innerHTML =
                                     data.data.late === 1;
                                 setCard();
-                                client.publish("abcent", "stop2");
+                                // client.publish("abcent", "stop2");
                             }
                         );
                     }
                     labelCount = [];
                 }
+
                 // new faceapi.draw.DrawTextField(
                 //     [`${label} (${parseInt(distance * 100, 10)})`],
                 //     // [`${label}`],

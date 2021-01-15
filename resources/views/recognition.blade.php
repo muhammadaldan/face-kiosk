@@ -40,7 +40,8 @@
       position: absolute;      
       z-index: 1;
     }
-    #alert{
+    #alert,
+    #alert2{
       background-color: white;
       position: absolute;
       z-index: 2;
@@ -60,7 +61,8 @@
       width: 100%;
       margin-right: 20px;
     }
-    #box{
+    #box,
+    #box2{
       transition: all .2s;
       display: flex;
       flex-direction: column-reverse;
@@ -102,6 +104,11 @@
           <img src="/assets/images/no-image.png" id="face" style="border-radius: 10px">    
         </div>
     </div>
+  </div>
+  <div id="alert2">
+      <div id="box2" style="text-align: center;height: 100%;display: flex;justify-content: center;align-items: center;">
+        <h3>Pastikan kamu dalam frame hanya 1 orang / detection</h3>
+      </div>        
   </div>
 </body>
 </html>
