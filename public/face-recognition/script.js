@@ -207,7 +207,9 @@ video.addEventListener("play", async () => {
                 );
                 console.log(results.length);
                 if (results.length > 1) {
-                    document.getElementById("alert2").style.opacity = 2;
+                    document.getElementById("alert2").style.opacity = 1;
+                } else {
+                    document.getElementById("alert2").style.opacity = 0;
                 }
 
                 if (labelCount.length > 10) {
